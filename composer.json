@@ -1,0 +1,17 @@
+{
+	"name": "silverstripe/contacts",
+	"description": "Contact management module, allowing import, export, management, grouping and tagging of contacts",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "admin", "contacts", "management"],
+	"license": "BSD-3-Clause",
+	"authors": [{
+		"name": "ilateral",
+		"email": "info@ilateral.co.uk"
+	}],
+	"require": {
+		"silverstripe/framework": "~3.1",
+        "colymba/gridfield-bulk-editing-tools": "2.1.1",
+        "silverstripe/tagfield": "*",
+        "tractorcow/silverstripe-autocomplete": "3.1.0"
+	}
+}
