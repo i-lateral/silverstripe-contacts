@@ -86,7 +86,7 @@ class Contact extends DataObject {
         )->setRightTitle(_t(
             "Contacts.TagDescription",
             "List of tags related to this contact, seperated by a comma."
-        );
+        ));
         
         $tag_field->setSeparator(",");
         
