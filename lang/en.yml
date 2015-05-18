@@ -1,0 +1,19 @@
+en:
+  Contact:
+    PLURALNAME: Contacts
+    SINGULARNAME: Contact
+  ContactList:
+    PLURALNAME: Lists
+    SINGULARNAME: List
+  Contacts:
+    Add: Add
+    AssignToList: 'Assign to list'
+    ChooseList: 'Choose a list'
+    FieldTitle: Title
+    Recipients: Recipients
+    SelectList: 'Select a List'
+    TagDescription: 'List of tags related to this contact, seperated by a comma.'
+  GRIDFIELD_BULKMANAGER_EDIT_HANDLER:
+    CANCEL_BTN_LABEL: Cancel
+  ContactAdmin:
+    MENUTITLE: Contacts
