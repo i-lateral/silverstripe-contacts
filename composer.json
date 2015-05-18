@@ -16,5 +16,8 @@
 	},
 	"replace": {
 		"silverstripe/contacts": "self.version"
-	}
+	},
+    "extra": {
+        "installer-name": "checkout"
+    }
 }
