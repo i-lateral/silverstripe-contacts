@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/contacts",
+	"name": "i-lateral/silverstripe-contacts",
 	"description": "Contact management module, allowing import, export, management, grouping and tagging of contacts",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "admin", "contacts", "management"],
@@ -13,5 +13,8 @@
         "colymba/gridfield-bulk-editing-tools": "2.1.1",
         "silverstripe/tagfield": "*",
         "tractorcow/silverstripe-autocomplete": "3.1.0"
+	},
+	"replace": {
+		"silverstripe/contacts": "self.version"
 	}
 }
