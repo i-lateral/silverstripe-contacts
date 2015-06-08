@@ -18,7 +18,13 @@ class ContactAdmin extends ModelAdmin {
     private static $url_segment = 'contacts';
 
     private static $menu_title = 'Contacts';
+
+    private static $model_importers = array(
+        'Contact' => 'CSVBulkLoader'
+    );
     
+    public $showImportForm = array('Contact');
+       
     public function getEditForm($id = null, $fields = null) {
 		$form = parent::getEditForm($id, $fields);
 		
@@ -53,14 +59,4 @@ class ContactAdmin extends ModelAdmin {
 		
 		return $form;
 	}
-    
-    public function ImportForm() {
-        $form = parent::ImportForm();
-
-        if($form) $form->Fields()->removeByName("EmptyBeforeImport");
-        
-        $this->extend("updateImportForm", $form);
-
-        return $form;
-    }
 }
