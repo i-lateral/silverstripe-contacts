@@ -11,8 +11,7 @@
 	"require": {
 		"silverstripe/framework": "~3.1",
         "colymba/gridfield-bulk-editing-tools": "2.1.1",
-        "silverstripe/tagfield": "*",
-        "tractorcow/silverstripe-autocomplete": "3.1.0"
+        "silverstripe/tagfield": "~1.0.0"
 	},
 	"replace": {
 		"silverstripe/contacts": "self.version"
