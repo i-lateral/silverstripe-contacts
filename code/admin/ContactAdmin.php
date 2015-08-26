@@ -11,7 +11,8 @@ class ContactAdmin extends ModelAdmin {
     private static $menu_priority = 8;
 
     private static $managed_models = array(
-        'Contact',
+        "Contact",
+        "ContactTag",
         "ContactList"
     );
 

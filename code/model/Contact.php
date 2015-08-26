@@ -6,10 +6,10 @@
  * @author ilateral
  * @package Contacts
  */
-class Contact extends DataObject {
+class Contact extends DataObject implements PermissionProvider {
     
     private static $db = array(
-        "Salutation" => "Varchar(5)",
+        "Salutation" => "Varchar(20)",
         "FirstName" => "Varchar(255)",
 		"MiddleName" => "Varchar(255)",
         "Surname" => "Varchar(255)",
@@ -23,13 +23,20 @@ class Contact extends DataObject {
         "County" => "Varchar(255)",
         "Country" => "Varchar(255)",
         "PostCode" => "Varchar(10)",
-        "Tags" => "Varchar(255)",
         "Source" => "Text",
         "Notes" => "Text",
     );
     
+	private static $many_many = array(
+		'Tags' => 'ContactTag'
+	);
+
 	private static $belongs_many_many = array(
 		'Lists' => 'ContactList'
+	);
+    
+    private static $casting = array(
+		'TagsList' => 'Varchar'
 	);
     
     private static $summary_fields = array(
@@ -40,7 +47,7 @@ class Contact extends DataObject {
         "Address2",
         "City",
         "PostCode",
-        "Tags"
+        "TagsList"
     );
 
 	private static $default_sort = '"FirstName" ASC, "Surname" ASC';
@@ -56,6 +63,7 @@ class Contact extends DataObject {
         "City",
         "Country",
         "PostCode",
+        "Tags.Title",
 		"Lists.Title"
 	);
     
@@ -74,23 +82,42 @@ class Contact extends DataObject {
 		return $s.$f.$m.$s.$e;
 	}
     
+    public function getTagsList() {
+        $return = "";
+        $tags = $this->Tags();
+        $i = 1;
+        
+        foreach($tags as $tag) {
+            $return .= $tag->Title;
+            
+            if($i < $tags->count())
+                $return .= ", ";
+            
+            $i++;
+        }
+        
+        return $return;
+    }
+    
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         
-        // Setup tag field
+        $fields->removeByName("Tags");
+        
         $tag_field = TagField::create(
-            "Tags",
-            "Tags",
+            'Tags',
             null,
-            "Contact"
+            ContactTag::get(),
+            $this->Tags()
         )->setRightTitle(_t(
             "Contacts.TagDescription",
             "List of tags related to this contact, seperated by a comma."
-        ));
+        ))->setShouldLazyLoad(true);
         
-        $tag_field->setSeparator(",");
-        
-        $fields->replaceField("Tags", $tag_field);
+        $fields->addFieldToTab(
+            "Root.Main",
+            $tag_field
+        );
         
         return $fields;
     }
@@ -100,5 +127,112 @@ class Contact extends DataObject {
             "FirstName",
             "Surname"
         ));
+    }
+    
+	public function providePermissions() {
+		return array(
+			"CONTACTS_MANAGE" => array(
+				'name' => _t(
+					'Contacts.PERMISSION_MANAGE_CONTACTS_DESCRIPTION',
+					'Manage contacts'
+				),
+				'help' => _t(
+					'Contacts.PERMISSION_MANAGE_CONTACTS_HELP',
+					'Allow creation and editing of contacts'
+				),
+				'category' => _t('Contacts.Contacts', 'Contacts')
+			),
+            "CONTACTS_DELETE" => array(
+				'name' => _t(
+					'Contacts.PERMISSION_DELETE_CONTACTS_DESCRIPTION',
+					'Delete contacts'
+				),
+				'help' => _t(
+					'Contacts.PERMISSION_DELETE_CONTACTS_HELP',
+					'Allow deleting of contacts'
+				),
+				'category' => _t('Contacts.Contacts', 'Contacts')
+			)
+		);
+	}
+    
+    public function canView($member = false) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE")))
+            return true;
+
+        return false;
+    }
+
+    public function canCreate($member = null) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE")))
+            return true;
+
+        return false;
+    }
+
+    public function canEdit($member = null) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE")))
+            return true;
+
+        return false;
+    }
+
+    public function canDelete($member = null) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_DELETE")))
+            return true;
+
+        return false;
     }
 }

@@ -6,7 +6,7 @@
  * @author ilateral
  * @package Contacts
  */
-class ContactList extends DataObject {
+class ContactList extends DataObject implements PermissionProvider {
 
     private static $singular_name = 'List';
 
@@ -88,5 +88,112 @@ class ContactList extends DataObject {
 
 		return $fields;
 	}
+    
+    public function providePermissions() {
+		return array(
+			"CONTACTS_LISTS_MANAGE" => array(
+				'name' => _t(
+					'Contacts.PERMISSION_MANAGE_CONTACTS_LISTS_DESCRIPTION',
+					'Manage contact lists'
+				),
+				'help' => _t(
+					'Contacts.PERMISSION_MANAGE_CONTACTS_LISTS_HELP',
+					'Allow creation and editing of contact lists'
+				),
+				'category' => _t('Contacts.Contacts', 'Contacts')
+			),
+            "CONTACTS_LISTS_DELETE" => array(
+				'name' => _t(
+					'Contacts.PERMISSION_DELETE_CONTACTS_LISTS_DESCRIPTION',
+					'Delete contact lists'
+				),
+				'help' => _t(
+					'Contacts.PERMISSION_DELETE_CONTACTS_LISTS_HELP',
+					'Allow deleting of contact lists'
+				),
+				'category' => _t('Contacts.Contacts', 'Contacts')
+			)
+		);
+	}
+    
+    public function canView($member = false) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_LISTS_MANAGE")))
+            return true;
+
+        return false;
+    }
+
+    public function canCreate($member = null) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_LISTS_MANAGE")))
+            return true;
+
+        return false;
+    }
+
+    public function canEdit($member = null) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_LISTS_MANAGE")))
+            return true;
+
+        return false;
+    }
+
+    public function canDelete($member = null) {
+        $extended = $this->extendedCan(__FUNCTION__, $member);
+
+		if($extended !== null) {
+			return $extended;
+		}
+        
+        if($member instanceof Member)
+            $memberID = $member->ID;
+        else if(is_numeric($member))
+            $memberID = $member;
+        else
+            $memberID = Member::currentUserID();
+            
+        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_LISTS_DELETE")))
+            return true;
+
+        return false;
+    }
 
 }
