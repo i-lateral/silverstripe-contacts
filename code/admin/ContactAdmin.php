@@ -24,6 +24,34 @@ class ContactAdmin extends ModelAdmin {
         'Contact' => 'CSVBulkLoader'
     );
     
+	public function getSearchContext() {
+        $context = parent::getSearchContext();
+
+        if($this->modelClass == 'Contact') {
+            $context
+                ->getFields()
+                ->push(new CheckboxField('q[Flagged]', _t("Contacts.ShowFlaggedOnly",'Show flagged only')));
+        }
+
+        return $context;
+    }
+    
+    public function getList() {
+        $list = parent::getList();
+
+        // use this to access search parameters
+        $params = $this->request->requestVar('q');
+
+        if($this->modelClass == 'Contact' && isset($params['Flagged']) && $params['Flagged']) {
+            $list = $list->filter(
+                "Notes.Flag",
+                true
+            );
+        }
+
+        return $list;
+    }
+    
     public $showImportForm = array('Contact');
        
     public function getEditForm($id = null, $fields = null) {
