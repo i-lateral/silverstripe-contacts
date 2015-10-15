@@ -23,9 +23,12 @@ class Contact extends DataObject implements PermissionProvider {
         "County" => "Varchar(255)",
         "Country" => "Varchar(255)",
         "PostCode" => "Varchar(10)",
-        "Source" => "Text",
-        "Notes" => "Text",
+        "Source" => "Text"
     );
+    
+    private static $has_many = array(
+		"Notes" => "Note"
+	);
     
 	private static $many_many = array(
 		'Tags' => 'ContactTag'
@@ -36,19 +39,27 @@ class Contact extends DataObject implements PermissionProvider {
 	);
     
     private static $casting = array(
-		'TagsList' => 'Varchar'
+		'TagsList' => 'Varchar',
+		'FlaggedNice' => 'Boolean'
 	);
     
     private static $summary_fields = array(
-        "FirstName",
-        "Surname",
-        "Email",
-        "Address1",
-        "Address2",
-        "City",
-        "PostCode",
-        "TagsList"
+		"FlaggedNice" =>"Flagged",
+        "FirstName" => "FirstName",
+        "Surname" => "Surname",
+        "Email" => "Email",
+        "Address1" => "Address1",
+        "Address2" => "Address2",
+        "City" => "City",
+        "PostCode" => "PostCode",
+        "TagsList" => "TagsList"
     );
+    
+	public function getFlaggedNice() {
+		$obj = HTMLText::create();
+		$obj->setValue(($this->Flagged)? '<span class="red">&#10033;</span>' : '');
+		return $obj;
+	}
 
 	private static $default_sort = '"FirstName" ASC, "Surname" ASC';
     
@@ -99,10 +110,21 @@ class Contact extends DataObject implements PermissionProvider {
         return $return;
     }
     
+    public function getFlagged() {
+		$flagged = false;
+		
+		foreach ($this->Notes() as $note) {
+			if ($note->Flag)
+				$flagged = true;
+		}
+		return $flagged;
+	}
+    
     public function getCMSFields() {
         $fields = parent::getCMSFields();
         
         $fields->removeByName("Tags");
+        $fields->removeByName("Notes");
         
         $tag_field = TagField::create(
             'Tags',
@@ -114,6 +136,19 @@ class Contact extends DataObject implements PermissionProvider {
             "List of tags related to this contact, seperated by a comma."
         ))->setShouldLazyLoad(true);
         
+        if ($this->ID) {
+			$gridField = GridField::create('Notes','Notes',$this->Notes());
+			
+			$config = GridFieldConfig_RelationEditor::create();
+
+			$gridField->setConfig($config);
+
+			$fields->addFieldToTab(
+				"Root.Notes",
+				$gridField
+			);
+		}
+		
         $fields->addFieldToTab(
             "Root.Main",
             $tag_field
