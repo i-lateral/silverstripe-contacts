@@ -6,7 +6,8 @@
  * @author ilateral
  * @package Contacts
  */
-class ContactAdmin extends ModelAdmin {
+class ContactAdmin extends ModelAdmin
+{
     
     private static $menu_priority = 8;
 
@@ -24,25 +25,27 @@ class ContactAdmin extends ModelAdmin {
         'Contact' => 'CSVBulkLoader'
     );
     
-	public function getSearchContext() {
+    public function getSearchContext()
+    {
         $context = parent::getSearchContext();
 
-        if($this->modelClass == 'Contact') {
+        if ($this->modelClass == 'Contact') {
             $context
                 ->getFields()
-                ->push(new CheckboxField('q[Flagged]', _t("Contacts.ShowFlaggedOnly",'Show flagged only')));
+                ->push(new CheckboxField('q[Flagged]', _t("Contacts.ShowFlaggedOnly", 'Show flagged only')));
         }
 
         return $context;
     }
     
-    public function getList() {
+    public function getList()
+    {
         $list = parent::getList();
 
         // use this to access search parameters
         $params = $this->request->requestVar('q');
 
-        if($this->modelClass == 'Contact' && isset($params['Flagged']) && $params['Flagged']) {
+        if ($this->modelClass == 'Contact' && isset($params['Flagged']) && $params['Flagged']) {
             $list = $list->filter(
                 "Notes.Flag",
                 true
@@ -54,10 +57,11 @@ class ContactAdmin extends ModelAdmin {
     
     public $showImportForm = array('Contact');
        
-    public function getEditForm($id = null, $fields = null) {
-		$form = parent::getEditForm($id, $fields);
-		
-		$class = $this->sanitiseClassName($this->modelClass);
+    public function getEditForm($id = null, $fields = null)
+    {
+        $form = parent::getEditForm($id, $fields);
+        
+        $class = $this->sanitiseClassName($this->modelClass);
         $gridField = $form->Fields()->fieldByName($class);
         $config = $gridField->getConfig();
 
@@ -65,7 +69,7 @@ class ContactAdmin extends ModelAdmin {
         $manager = new GridFieldBulkManager();
         $manager->removeBulkAction("unLink");
         
-        if($class == 'Contact') {
+        if ($class == 'Contact') {
             $manager->addBulkAction(
                 "assign",
                 _t("Contacts.AssignToList", "Assign to list"),
@@ -85,7 +89,7 @@ class ContactAdmin extends ModelAdmin {
         $config->addComponents($manager);
         
         $this->extend("updateEditForm", $form);
-		
-		return $form;
-	}
+        
+        return $form;
+    }
 }
