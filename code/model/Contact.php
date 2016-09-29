@@ -117,7 +117,7 @@ class Contact extends DataObject implements PermissionProvider
 		$s = '';
 		if (!empty($this->Surname)) $s = "$this->Surname ";
         
-		return $t.$f.$m.$s;
+		return $t.' '.$f.' '.$m.' '.$s;
 	}
 	
 
