@@ -6,12 +6,13 @@
  * @author ilateral
  * @package Contacts
  */
-class Contact extends DataObject implements PermissionProvider {
+class Contact extends DataObject implements PermissionProvider
+{
     
     private static $db = array(
         "Salutation" => "Varchar(20)",
         "FirstName" => "Varchar(255)",
-		"MiddleName" => "Varchar(255)",
+        "MiddleName" => "Varchar(255)",
         "Surname" => "Varchar(255)",
         "Company" => "Varchar(255)",
         "Phone" => "Varchar(15)",
@@ -27,24 +28,24 @@ class Contact extends DataObject implements PermissionProvider {
     );
     
     private static $has_many = array(
-		"Notes" => "Note"
-	);
+        "Notes" => "Note"
+    );
     
-	private static $many_many = array(
-		'Tags' => 'ContactTag'
-	);
+    private static $many_many = array(
+        'Tags' => 'ContactTag'
+    );
 
-	private static $belongs_many_many = array(
-		'Lists' => 'ContactList'
-	);
+    private static $belongs_many_many = array(
+        'Lists' => 'ContactList'
+    );
     
     private static $casting = array(
-		'TagsList' => 'Varchar',
-		'FlaggedNice' => 'Boolean'
-	);
+        'TagsList' => 'Varchar',
+        'FlaggedNice' => 'Boolean'
+    );
     
     private static $summary_fields = array(
-		"FlaggedNice" =>"Flagged",
+        "FlaggedNice" =>"Flagged",
         "FirstName" => "FirstName",
         "Surname" => "Surname",
         "Email" => "Email",
@@ -55,45 +56,58 @@ class Contact extends DataObject implements PermissionProvider {
         "TagsList" => "TagsList"
     );
     
-	public function getFlaggedNice() {
-		$obj = HTMLText::create();
-		$obj->setValue(($this->Flagged)? '<span class="red">&#10033;</span>' : '');
-		return $obj;
-	}
+    public function getFlaggedNice()
+    {
+        $obj = HTMLText::create();
+        $obj->setValue(($this->Flagged)? '<span class="red">&#10033;</span>' : '');
+        return $obj;
+    }
 
-	private static $default_sort = '"FirstName" ASC, "Surname" ASC';
+    private static $default_sort = '"FirstName" ASC, "Surname" ASC';
     
-	private static $searchable_fields = array(
-		"Salutation",
-		"FirstName",
-		"MiddleName",
-		"Surname",
-		"Email",
+    private static $searchable_fields = array(
+        "Salutation",
+        "FirstName",
+        "MiddleName",
+        "Surname",
+        "Email",
         "Address1",
         "Address2",
         "City",
         "Country",
         "PostCode",
         "Tags.Title",
-		"Lists.Title"
-	);
+        "Lists.Title"
+    );
     
-    public function getTitle() {
-		$t = '';
-		if (!empty($this->Salutation)) $t = "$this->Salutation ";
+    public function getTitle()
+    {
+        $t = '';
+        if (!empty($this->Salutation)) {
+            $t = "$this->Salutation ";
+        }
         $f = '';
-		if (!empty($this->FirstName)) $f = "$this->FirstName ";
-		$m = '';
-		if (!empty($this->MiddleName)) $m = "$this->MiddleName ";
-		$s = '';
-		if (!empty($this->Surname)) $s = "$this->Surname ";
-		$e = '';
-		if (!empty($this->Email)) $e = "($this->Email)";
+        if (!empty($this->FirstName)) {
+            $f = "$this->FirstName ";
+        }
+        $m = '';
+        if (!empty($this->MiddleName)) {
+            $m = "$this->MiddleName ";
+        }
+        $s = '';
+        if (!empty($this->Surname)) {
+            $s = "$this->Surname ";
+        }
+        $e = '';
+        if (!empty($this->Email)) {
+            $e = "($this->Email)";
+        }
         
 		return $t.$f.$m.$s.$e;
 	}
 
-    public function getFullName() {
+    public function getFullName() 
+    {
 		$t = '';
 		if (!empty($this->Salutation)) $t = "$this->Salutation ";
         	$f = '';
@@ -112,20 +126,23 @@ class Contact extends DataObject implements PermissionProvider {
 	 *
 	 * @return string Returns the first- and surname of the member.
 	 */
-	public function getName() {
+	public function getName() 
+    {
 		return ($this->Surname) ? trim($this->FirstName . ' ' . $this->Surname) : $this->FirstName;
 	}
     
-    public function getTagsList() {
+    public function getTagsList()
+    {
         $return = "";
         $tags = $this->Tags();
         $i = 1;
         
-        foreach($tags as $tag) {
+        foreach ($tags as $tag) {
             $return .= $tag->Title;
             
-            if($i < $tags->count())
+            if ($i < $tags->count()) {
                 $return .= ", ";
+            }
             
             $i++;
         }
@@ -133,17 +150,20 @@ class Contact extends DataObject implements PermissionProvider {
         return $return;
     }
     
-    public function getFlagged() {
-		$flagged = false;
-		
-		foreach ($this->Notes() as $note) {
-			if ($note->Flag)
-				$flagged = true;
-		}
-		return $flagged;
-	}
+    public function getFlagged()
+    {
+        $flagged = false;
+        
+        foreach ($this->Notes() as $note) {
+            if ($note->Flag) {
+                $flagged = true;
+            }
+        }
+        return $flagged;
+    }
     
-    public function getCMSFields() {
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
         
         $fields->removeByName("Tags");
@@ -160,18 +180,18 @@ class Contact extends DataObject implements PermissionProvider {
         ))->setShouldLazyLoad(true);
         
         if ($this->ID) {
-			$gridField = GridField::create('Notes','Notes',$this->Notes());
-			
-			$config = GridFieldConfig_RelationEditor::create();
+            $gridField = GridField::create('Notes', 'Notes', $this->Notes());
+            
+            $config = GridFieldConfig_RelationEditor::create();
 
-			$gridField->setConfig($config);
+            $gridField->setConfig($config);
 
-			$fields->addFieldToTab(
-				"Root.Notes",
-				$gridField
-			);
-		}
-		
+            $fields->addFieldToTab(
+                "Root.Notes",
+                $gridField
+            );
+        }
+        
         $fields->addFieldToTab(
             "Root.Main",
             $tag_field
@@ -180,116 +200,130 @@ class Contact extends DataObject implements PermissionProvider {
         return $fields;
     }
     
-    public function getCMSValidator() {
+    public function getCMSValidator()
+    {
         return new RequiredFields(array(
             "FirstName",
             "Surname"
         ));
     }
     
-	public function providePermissions() {
-		return array(
-			"CONTACTS_MANAGE" => array(
-				'name' => _t(
-					'Contacts.PERMISSION_MANAGE_CONTACTS_DESCRIPTION',
-					'Manage contacts'
-				),
-				'help' => _t(
-					'Contacts.PERMISSION_MANAGE_CONTACTS_HELP',
-					'Allow creation and editing of contacts'
-				),
-				'category' => _t('Contacts.Contacts', 'Contacts')
-			),
+    public function providePermissions()
+    {
+        return array(
+            "CONTACTS_MANAGE" => array(
+                'name' => _t(
+                    'Contacts.PERMISSION_MANAGE_CONTACTS_DESCRIPTION',
+                    'Manage contacts'
+                ),
+                'help' => _t(
+                    'Contacts.PERMISSION_MANAGE_CONTACTS_HELP',
+                    'Allow creation and editing of contacts'
+                ),
+                'category' => _t('Contacts.Contacts', 'Contacts')
+            ),
             "CONTACTS_DELETE" => array(
-				'name' => _t(
-					'Contacts.PERMISSION_DELETE_CONTACTS_DESCRIPTION',
-					'Delete contacts'
-				),
-				'help' => _t(
-					'Contacts.PERMISSION_DELETE_CONTACTS_HELP',
-					'Allow deleting of contacts'
-				),
-				'category' => _t('Contacts.Contacts', 'Contacts')
-			)
-		);
-	}
+                'name' => _t(
+                    'Contacts.PERMISSION_DELETE_CONTACTS_DESCRIPTION',
+                    'Delete contacts'
+                ),
+                'help' => _t(
+                    'Contacts.PERMISSION_DELETE_CONTACTS_HELP',
+                    'Allow deleting of contacts'
+                ),
+                'category' => _t('Contacts.Contacts', 'Contacts')
+            )
+        );
+    }
     
-    public function canView($member = false) {
+    public function canView($member = false)
+    {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
-		if($extended !== null) {
-			return $extended;
-		}
+        if ($extended !== null) {
+            return $extended;
+        }
         
-        if($member instanceof Member)
+        if ($member instanceof Member) {
             $memberID = $member->ID;
-        else if(is_numeric($member))
+        } elseif (is_numeric($member)) {
             $memberID = $member;
-        else
+        } else {
             $memberID = Member::currentUserID();
+        }
             
-        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE")))
+        if ($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE"))) {
             return true;
+        }
 
         return false;
     }
 
-    public function canCreate($member = null) {
+    public function canCreate($member = null)
+    {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
-		if($extended !== null) {
-			return $extended;
-		}
+        if ($extended !== null) {
+            return $extended;
+        }
         
-        if($member instanceof Member)
+        if ($member instanceof Member) {
             $memberID = $member->ID;
-        else if(is_numeric($member))
+        } elseif (is_numeric($member)) {
             $memberID = $member;
-        else
+        } else {
             $memberID = Member::currentUserID();
+        }
             
-        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE")))
+        if ($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE"))) {
             return true;
+        }
 
         return false;
     }
 
-    public function canEdit($member = null) {
+    public function canEdit($member = null)
+    {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
-		if($extended !== null) {
-			return $extended;
-		}
+        if ($extended !== null) {
+            return $extended;
+        }
         
-        if($member instanceof Member)
+        if ($member instanceof Member) {
             $memberID = $member->ID;
-        else if(is_numeric($member))
+        } elseif (is_numeric($member)) {
             $memberID = $member;
-        else
+        } else {
             $memberID = Member::currentUserID();
+        }
             
-        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE")))
+        if ($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_MANAGE"))) {
             return true;
+        }
 
         return false;
     }
 
-    public function canDelete($member = null) {
+    public function canDelete($member = null)
+    {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
-		if($extended !== null) {
-			return $extended;
-		}
+        if ($extended !== null) {
+            return $extended;
+        }
         
-        if($member instanceof Member)
+        if ($member instanceof Member) {
             $memberID = $member->ID;
-        else if(is_numeric($member))
+        } elseif (is_numeric($member)) {
             $memberID = $member;
-        else
+        } else {
             $memberID = Member::currentUserID();
+        }
             
-        if($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_DELETE")))
+        if ($memberID && Permission::checkMember($memberID, array("ADMIN", "CONTACTS_DELETE"))) {
             return true;
+        }
 
         return false;
     }
