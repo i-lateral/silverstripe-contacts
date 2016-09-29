@@ -79,7 +79,30 @@ class Contact extends DataObject implements PermissionProvider {
 		$e = '';
 		if (!empty($this->Email)) $e = "($this->Email)";
         
-		return $s.$f.$m.$s.$e;
+		return $t.$f.$m.$s.$e;
+	}
+
+    public function getFullName() {
+		$t = '';
+		if (!empty($this->Salutation)) $t = "$this->Salutation ";
+        	$f = '';
+		if (!empty($this->FirstName)) $f = "$this->FirstName ";
+		$m = '';
+		if (!empty($this->MiddleName)) $m = "$this->MiddleName ";
+		$s = '';
+		if (!empty($this->Surname)) $s = "$this->Surname ";
+        
+		return $t.$f.$m.$s;
+	}
+	
+
+	/**
+	 * Get the complete name of the member
+	 *
+	 * @return string Returns the first- and surname of the member.
+	 */
+	public function getName() {
+		return ($this->Surname) ? trim($this->FirstName . ' ' . $this->Surname) : $this->FirstName;
 	}
     
     public function getTagsList() {
