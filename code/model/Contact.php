@@ -41,7 +41,9 @@ class Contact extends DataObject implements PermissionProvider
     
     private static $casting = array(
         'TagsList' => 'Varchar',
-        'FlaggedNice' => 'Boolean'
+        'FlaggedNice' => 'Boolean',
+        'FullName' => 'Varchar',
+        'Name' => 'Varchar'
     );
     
     private static $summary_fields = array(
