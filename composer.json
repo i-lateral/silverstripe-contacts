@@ -16,7 +16,7 @@
     }],
     "require": {
         "silverstripe/framework": "^4.0",
-        "colymba/gridfield-bulk-editing-tools": "^4.0",
+        "colymba/gridfield-bulk-editing-tools": "*",
         "silverstripe/tagfield": "^2.0"
     },
     "replace": {
