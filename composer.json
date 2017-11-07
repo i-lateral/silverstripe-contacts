@@ -29,8 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SilverStripe\\Admin\\": "code/",
-            "SilverStripe\\Admin\\Tests\\": "tests/php/"
+            "ilateral\\SilverStripe\\Contacts\\": "src/"
         }
     },
     "minimum-stability": "dev",
