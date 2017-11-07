@@ -30,6 +30,11 @@ class ContactAdmin extends ModelAdmin
     private static $model_importers = array(
         'Contact' => 'SilverStripe\\Dev\\CSVBulkLoader'
     );
+
+    /**
+     * @var string
+     */
+    private static $menu_icon_class = 'font-icon-torso';
     
     public function getSearchContext()
     {
