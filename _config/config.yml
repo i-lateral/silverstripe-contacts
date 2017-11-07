@@ -1,6 +1,6 @@
 ---
 Name: contactsconfig
 ---
-LeftAndMain:
-  extra_requirements_css:
-    - contacts/css/admin.css
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - ilateral\SilverStripe\Contacts\Extensions\ContactsAdminExtension
