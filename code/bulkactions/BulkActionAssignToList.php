@@ -1,14 +1,29 @@
 <?php
 
+namespace ilateral\SilverStripe\Contacts\BulkActions;
+
+use SilverStripe\Core\Convert;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Control\PjaxResponseNegotiator;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\FormAction;
+use ilateral\SilverStripe\Contacts\Model\ContactList;
+use Colymba\BulkManager\BulkAction\Handler as BulkActionHandler;
+
 /**
  * Bulk action handler that adds selected records to a list
  * 
  * @author ilateral
  * @package Contacts
  */
-class BulkActionAssignToList extends GridFieldBulkActionHandler
+class AssignToList extends BulkActionHandler
 {
-    
+   
     /**
      * RequestHandler allowed actions
      * @var array
@@ -58,7 +73,7 @@ class BulkActionAssignToList extends GridFieldBulkActionHandler
         $form->setAttribute('data-pjax-fragment', 'CurrentForm Content');
         
         if ($this->request->isAjax()) {
-            $response = new SS_HTTPResponse(
+            $response = new HTTPResponse(
                 Convert::raw2json(array( 'Content' => $form->forAjaxTemplate()->getValue() ))
             );
             
@@ -175,7 +190,7 @@ class BulkActionAssignToList extends GridFieldBulkActionHandler
                     $return[] = $record->ID;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $controller = $this->controller;
             
             $form->sessionMessage(

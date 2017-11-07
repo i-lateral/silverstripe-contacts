@@ -1,5 +1,11 @@
 <?php
 
+namespace ilateral\SilverStripe\Contacts\Admin;
+
+use Silverstripe\Admin\ModelAdmin;
+use SilverStripe\Forms\CheckboxField;
+use Colymba\BulkManager\BulkManager;
+
 /**
  * Management interface for contacts
  * 
@@ -12,9 +18,9 @@ class ContactAdmin extends ModelAdmin
     private static $menu_priority = 8;
 
     private static $managed_models = array(
-        "Contact",
-        "ContactTag",
-        "ContactList"
+        "ilateral\\SilverStripe\\Contacts\\Model\\Contact",
+        "ilateral\\SilverStripe\\Contacts\\Model\\ContactTag",
+        "ilateral\\SilverStripe\\Contacts\\Model\\ContactList"
     );
 
     private static $url_segment = 'contacts';
@@ -22,7 +28,7 @@ class ContactAdmin extends ModelAdmin
     private static $menu_title = 'Contacts';
 
     private static $model_importers = array(
-        'Contact' => 'CSVBulkLoader'
+        'Contact' => 'SilverStripe\\Dev\\CSVBulkLoader'
     );
     
     public function getSearchContext()
@@ -66,7 +72,7 @@ class ContactAdmin extends ModelAdmin
         $config = $gridField->getConfig();
 
         // Add bulk editing to gridfield
-        $manager = new GridFieldBulkManager();
+        $manager = new BulkManager();
         $manager->removeBulkAction("unLink");
         
         if ($class == 'Contact') {

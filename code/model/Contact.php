@@ -1,5 +1,18 @@
 <?php
 
+namespace ilateral\SilverStripe\Contacts\Model;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBHTMLText as HTMLText;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionProvider;
+use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
+use SilverStripe\TagField\TagField;
+use ilateral\SilverStripe\Contacts\Model\ContactTag;
+
 /**
  * Details on a particular contact
  * 
@@ -8,8 +21,7 @@
  */
 class Contact extends DataObject implements PermissionProvider
 {
-    
-    private static $db = array(
+    private static $db = [
         "Salutation" => "Varchar(20)",
         "FirstName" => "Varchar(255)",
         "MiddleName" => "Varchar(255)",
@@ -25,28 +37,28 @@ class Contact extends DataObject implements PermissionProvider
         "Country" => "Varchar(255)",
         "PostCode" => "Varchar(10)",
         "Source" => "Text"
-    );
+    ];
     
-    private static $has_many = array(
-        "Notes" => "Note"
-    );
+    private static $has_many = [
+        "Notes" => "ilateral\\SilverStripe\\Contacts\\Model\\Note"
+    ];
     
-    private static $many_many = array(
-        'Tags' => 'ContactTag'
-    );
+    private static $many_many = [
+        'Tags' => 'ilateral\\SilverStripe\\Contacts\\Model\\ContactTag'
+    ];
 
-    private static $belongs_many_many = array(
-        'Lists' => 'ContactList'
-    );
+    private static $belongs_many_many = [
+        'Lists' => 'ilateral\\SilverStripe\\Contacts\\Model\\ContactList'
+    ];
     
-    private static $casting = array(
+    private static $casting = [
         'TagsList' => 'Varchar',
         'FlaggedNice' => 'Boolean',
         'FullName' => 'Varchar',
         'Name' => 'Varchar'
-    );
+    ];
     
-    private static $summary_fields = array(
+    private static $summary_fields = [
         "FlaggedNice" =>"Flagged",
         "FirstName" => "FirstName",
         "Surname" => "Surname",
@@ -56,18 +68,14 @@ class Contact extends DataObject implements PermissionProvider
         "City" => "City",
         "PostCode" => "PostCode",
         "TagsList" => "TagsList"
-    );
-    
-    public function getFlaggedNice()
-    {
-        $obj = HTMLText::create();
-        $obj->setValue(($this->Flagged)? '<span class="red">&#10033;</span>' : '');
-        return $obj;
-    }
+    ];
 
-    private static $default_sort = '"FirstName" ASC, "Surname" ASC';
+    private static $default_sort = [
+        "FirstName" => "ASC",
+        "Surname" => "ASC"
+    ];
     
-    private static $searchable_fields = array(
+    private static $searchable_fields = [
         "Salutation",
         "FirstName",
         "MiddleName",
@@ -80,7 +88,7 @@ class Contact extends DataObject implements PermissionProvider
         "PostCode",
         "Tags.Title",
         "Lists.Title"
-    );
+    ];
     
     public function getTitle()
     {
@@ -121,7 +129,13 @@ class Contact extends DataObject implements PermissionProvider
         
 		return $t.' '.$f.' '.$m.' '.$s;
 	}
-	
+    
+    public function getFlaggedNice()
+    {
+        $obj = HTMLText::create();
+        $obj->setValue(($this->Flagged)? '<span class="red">&#10033;</span>' : '');
+        return $obj;
+    }
 
 	/**
 	 * Get the complete name of the member
@@ -182,7 +196,11 @@ class Contact extends DataObject implements PermissionProvider
         ))->setShouldLazyLoad(true);
         
         if ($this->ID) {
-            $gridField = GridField::create('Notes', 'Notes', $this->Notes());
+            $gridField = GridField::create(
+                'Notes',
+                'Notes',
+                $this->Notes()
+            );
             
             $config = GridFieldConfig_RelationEditor::create();
 
@@ -238,7 +256,7 @@ class Contact extends DataObject implements PermissionProvider
         );
     }
     
-    public function canView($member = false)
+    public function canView($member = false, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -261,7 +279,7 @@ class Contact extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canCreate($member = null)
+    public function canCreate($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -284,7 +302,7 @@ class Contact extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -307,7 +325,7 @@ class Contact extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 

@@ -1,5 +1,12 @@
 <?php
 
+namespace ilateral\SilverStripe\Contacts\Model;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionProvider;
+
 /**
  * A container for grouping contacts
  * 
@@ -13,22 +20,22 @@ class ContactList extends DataObject implements PermissionProvider
 
     private static $plural_name = 'Lists';
 
-    private static $db = array(
+    private static $db = [
         'Title' => "Varchar(255)",
-    );
+    ];
 
-    private static $many_many = array(
-        'Contacts' => "Contact",
-    );
+    private static $many_many = [
+        'Contacts' => "ilateral\\SilverStripe\\Contacts\\Model\\Contact",
+    ];
 
-    private static $summary_fields = array(
+    private static $summary_fields = [
         'Title',
         'Contacts.Count'
-    );
+    ];
 
-    private static $searchable_fields = array(
+    private static $searchable_fields = [
         'Title'
-    );
+    ];
 
     public function fieldLabels($includelrelations = true)
     {
@@ -41,51 +48,18 @@ class ContactList extends DataObject implements PermissionProvider
 
     public function getCMSFields()
     {
-        $fields = new FieldList();
-        
-        $fields->push(
-            new TabSet(
-                "Root",
-                $mainTab = new Tab("Main")
-            )
-        );
+        $fields = parent::getCMSFields();
 
-        $fields->addFieldToTab(
-            'Root.Main',
-            new TextField('Title')
-        );
+        // Move contacts field to main tab
+        $contacts_field = $fields->dataFieldByName("Contacts");
+        $fields->removeByName("Contacts");
 
-        $grid_config = GridFieldConfig::create(
-            new GridFieldButtonRow('before'),
-            new GridFieldToolbarHeader(),
-            new GridFieldAddNewButton('toolbar-header-left'),
-            $autocompelete = new GridFieldAutocompleterWithFilter(
-                'toolbar-header-right',
-                array(
-                    'FirstName',
-                    'MiddleName',
-                    'Surname',
-                    'Email',
-                )
-            ),
-            new GridFieldSortableHeader(),
-            $dataColumns = new GridFieldDataColumns(),
-            new GridFieldFilterHeader(),
-            new GridFieldDeleteAction(true),
-            new GridFieldPaginator(50),
-            new GridFieldDetailForm(),
-            new GridFieldEditButton()
-        );
-
-        $fields->addFieldToTab(
-            'Root.Main',
-            $contacts_grid = GridField::create(
-                'Contacts',
-                "",
-                $this->Contacts(),
-                $grid_config
-            )
-        );
+        if ($contacts_field) {
+            $fields->addFieldToTab(
+                'Root.Main',
+                $contacts_field
+            );
+        }
         
         $this->extend("updateCMSFields", $fields);
 
@@ -120,7 +94,7 @@ class ContactList extends DataObject implements PermissionProvider
         );
     }
     
-    public function canView($member = false)
+    public function canView($member = false, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -143,7 +117,7 @@ class ContactList extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canCreate($member = null)
+    public function canCreate($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -166,7 +140,7 @@ class ContactList extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -189,7 +163,7 @@ class ContactList extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 

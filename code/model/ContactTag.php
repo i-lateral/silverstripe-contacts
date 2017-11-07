@@ -1,5 +1,12 @@
 <?php
 
+namespace ilateral\SilverStripe\Contacts\Model;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionProvider;
+
 /**
  * A tag for keyword descriptions of a contact.
  *
@@ -12,27 +19,29 @@ class ContactTag extends DataObject implements PermissionProvider
     private static $singular_name = 'Tag';
 
     private static $plural_name = 'Tags';
-    
-    /**
-     * @var array
-     */
+        
     private static $db = array(
         'Title' => 'Varchar(255)',
     );
 
-    /**
-     * @var array
-     */
-    private static $belongs_many_many = array(
-        'Contacts' => 'Contact',
-    );
+    private static $belongs_many_many = [
+        'Contacts' => 'ilateral\\SilverStripe\\Contacts\\Model\\Contact',
+    ];
 
-    /**
-     * {@inheritdoc}
-     */
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
+
+        // Move contacts field to main tab
+        $contacts_field = $fields->dataFieldByName("Contacts");
+        $fields->removeByName("Contacts");
+
+        if ($contacts_field) {
+            $fields->addFieldToTab(
+                'Root.Main',
+                $contacts_field
+            );
+        }
 
         $this->extend('updateCMSFields', $fields);
 
@@ -67,7 +76,7 @@ class ContactTag extends DataObject implements PermissionProvider
         );
     }
 
-    public function canView($member = false)
+    public function canView($member = false, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -90,7 +99,7 @@ class ContactTag extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canCreate($member = null)
+    public function canCreate($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -113,7 +122,7 @@ class ContactTag extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
@@ -136,7 +145,7 @@ class ContactTag extends DataObject implements PermissionProvider
         return false;
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null, $context = [])
     {
         $extended = $this->extendedCan(__FUNCTION__, $member);
 
