@@ -27,6 +27,11 @@ class ContactTag extends DataObject implements PermissionProvider
     private static $belongs_many_many = [
         'Contacts' => 'ilateral\\SilverStripe\\Contacts\\Model\\Contact',
     ];
+    
+    private static $summary_fields = [
+        'Title',
+        'Contacts.Count'
+    ];
 
     public function getCMSFields()
     {
