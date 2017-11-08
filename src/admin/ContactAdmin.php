@@ -17,19 +17,23 @@ class ContactAdmin extends ModelAdmin
     
     private static $menu_priority = 8;
 
-    private static $managed_models = array(
+    private static $managed_models = [
         "ilateral\\SilverStripe\\Contacts\\Model\\Contact",
         "ilateral\\SilverStripe\\Contacts\\Model\\ContactTag",
         "ilateral\\SilverStripe\\Contacts\\Model\\ContactList"
-    );
+    ];
 
     private static $url_segment = 'contacts';
 
     private static $menu_title = 'Contacts';
 
-    private static $model_importers = array(
-        'Contact' => 'SilverStripe\\Dev\\CSVBulkLoader'
-    );
+    private static $model_importers = [
+        'ilateral\\SilverStripe\\Contacts\\Model\\ContactList' => 'SilverStripe\\Dev\\CSVBulkLoader'
+    ];
+
+    public $showImportForm = [
+        'ilateral\\SilverStripe\\Contacts\\Model\\ContactList'
+    ];
 
     /**
      * @var string
@@ -40,7 +44,7 @@ class ContactAdmin extends ModelAdmin
     {
         $context = parent::getSearchContext();
 
-        if ($this->modelClass == 'Contact') {
+        if ($this->modelClass == "ilateral\\SilverStripe\\Contacts\\Model\\Contact") {
             $context
                 ->getFields()
                 ->push(new CheckboxField('q[Flagged]', _t("Contacts.ShowFlaggedOnly", 'Show flagged only')));
@@ -56,7 +60,7 @@ class ContactAdmin extends ModelAdmin
         // use this to access search parameters
         $params = $this->request->requestVar('q');
 
-        if ($this->modelClass == 'Contact' && isset($params['Flagged']) && $params['Flagged']) {
+        if ($this->modelClass == "ilateral-SilverStripe-Contacts-Model-Contact" && isset($params['Flagged']) && $params['Flagged']) {
             $list = $list->filter(
                 "Notes.Flag",
                 true
@@ -65,8 +69,6 @@ class ContactAdmin extends ModelAdmin
 
         return $list;
     }
-    
-    public $showImportForm = array('Contact');
        
     public function getEditForm($id = null, $fields = null)
     {
@@ -79,12 +81,12 @@ class ContactAdmin extends ModelAdmin
         // Add bulk editing to gridfield
         $manager = new BulkManager();
         $manager->removeBulkAction("unLink");
-        
-        if ($class == 'Contact') {
+
+        if ($class == "ilateral-SilverStripe-Contacts-Model-Contact") {
             $manager->addBulkAction(
                 "assign",
                 _t("Contacts.AssignToList", "Assign to list"),
-                "BulkActionAssignToList",
+                "ilateral\\SilverStripe\\Contacts\\BulkActions\\AssignToList",
                 array(
                     'isAjax' => false,
                     'icon' => 'pencil',

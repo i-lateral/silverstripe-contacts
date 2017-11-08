@@ -7,6 +7,7 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\PjaxResponseNegotiator;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HiddenField;
@@ -195,8 +196,7 @@ class AssignToList extends BulkActionHandler
             
             $form->sessionMessage(
                 $e->getResult()->message(),
-                'bad',
-                false
+                ValidationResult::TYPE_ERROR
             );
                 
             $responseNegotiator = new PjaxResponseNegotiator(array(
@@ -215,12 +215,15 @@ class AssignToList extends BulkActionHandler
             return $responseNegotiator->respond($controller->getRequest());
         }
         
-        
         $controller = $this->getToplevelController();
         $form = $controller->EditForm();
         
         $message = "Added " . count($return) . " contacts to mailing list '{$list->Title}'";
-        $form->sessionMessage($message, 'good', false);
+        
+        $form->sessionMessage(
+            $message,
+            ValidationResult::TYPE_GOOD
+        );
         
         // Changes to the record properties might've excluded the record from
         // a filtered list, so return back to the main view if it can't be found
