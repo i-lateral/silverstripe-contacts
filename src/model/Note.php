@@ -18,6 +18,7 @@ use ilateral\SilverStripe\Contacts\Model\ContactTag;
  */
 class Note extends DataObject
 {
+    private static $table_name = 'Note';
 
     private static $db = [
         "Content" => "Text",

@@ -15,6 +15,7 @@ use SilverStripe\Security\PermissionProvider;
  */
 class ContactList extends DataObject implements PermissionProvider
 {
+    private static $table_name = 'ContactList';
 
     private static $singular_name = 'List';
 

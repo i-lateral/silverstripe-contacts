@@ -21,6 +21,8 @@ use ilateral\SilverStripe\Contacts\Model\ContactTag;
  */
 class Contact extends DataObject implements PermissionProvider
 {
+    private static $table_name = 'Contact';
+
     private static $db = [
         "Salutation" => "Varchar(20)",
         "FirstName" => "Varchar(255)",
